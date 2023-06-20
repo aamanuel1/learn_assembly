@@ -1,0 +1,17 @@
+#ignore all files
+*
+
+#unignore directories
+!*/
+!/**/
+
+#unignore file extensions
+!*.*
+
+#unignore important extensionless files
+!Makefile
+!README
+
+#unignore assembly files
+!*.s
+
