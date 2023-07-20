@@ -4,41 +4,41 @@
 
 .globl _start
 .section .data
-numberofnumbers:
+numberofnumbers: #elements in the array
 	.quad 7
 
-mynumbers:
+mynumbers: #array of numbers
 	.quad 5, 20, 33, 80, 52, 10, 1
 
-thenumber:
+thenumber: #The number
 	.quad 80
 
 .section .text
 _start:
-	movq	numberofnumbers, %rcx
-	movq	$0, %rbx
-	movq	thenumber, %rdi
+	movq	numberofnumbers, %rcx	#move array size into counter register
+	movq	$0, %rbx		#move the index into base register 
+	movq	thenumber, %rdi		#move the number to find in the dest reg.
 
-	cmp	$0, %rcx
+	cmp	$0, %rcx		#if empty array then end
 	je	endloop
 
 searchloop:
-	movq	mynumbers(, %rbx, 8), %rax
-	cmp	%rdi, %rax
-	je	found
-	cmp	$0, %rcx
-	je 	notfound
+	movq	mynumbers(, %rbx, 8), %rax #use general address mode with index and mult 8 for quadword.
+	cmp	%rdi, %rax		#compare the number with the array entry
+	je	found			#jump to found if comparison is equal
+	jmp 	loopcontrol		#otherwise jump to loopcontrol
 
 loopcontrol:
-	loopq 	searchloop
+	incq	%rbx			#increment the base register to move up in the array
+	loopq 	searchloop		#decrement rcx by 1 and goto searchloop
 
 notfound:
-	movq	$0, %rdi
-	jmp	endloop
+	movq	$0, %rdi		#If the rcx register is 0, prev instruction falls through.
+	jmp	endloop			#avoid falling through into found block.
 
 found:
-	movq	$1, %rdi
+	movq	$1, %rdi		#put 1 into the destination register for the echo
 
 endloop:
-	movq	$60, %rax
+	movq	$60, %rax		#return control to the OS.
 	syscall
